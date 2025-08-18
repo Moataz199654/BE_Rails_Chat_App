@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_05_014644) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_12_203155) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,7 +27,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_05_014644) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "messages_count", default: 0, null: false
-    t.index ["application_id"], name: "index_chats_on_application_id"
+    t.string "name"
+    t.index ["number"], name: "index_chats_on_number"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -37,7 +38,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_05_014644) do
     t.string "sender"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["chat_id"], name: "index_messages_on_chat_id"
   end
 
   add_foreign_key "chats", "applications"
