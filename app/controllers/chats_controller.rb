@@ -3,18 +3,23 @@ class ChatsController < ApplicationController
     application = Application.find_by(token: params[:application_token])
 
     if application.nil?
-      return render json: { error: 'Application not found' }, status: :not_found
+      return render json: { error: "Application not found" }, status: :not_found
     end
 
-    # Generate the next chat number for this app
-    next_number = application.chats.count + 1
+    retries ||= 0
+    begin
+      next_number = (application.chats.maximum(:number) || 0) + 1
+      chat = application.chats.build(number: next_number)
 
-    chat = application.chats.build(number: next_number)
-
-    if chat.save
-      render json: { number: chat.number }, status: :created
-    else
-      render json: { errors: chat.errors.full_messages }, status: :unprocessable_entity
+      if chat.save
+        render json: { number: chat.number }, status: :created
+      else
+        render json: { errors: chat.errors.full_messages }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordNotUnique
+      retries += 1
+      retry if retries < 10
+      render json: { error: "Could not create chat due to race condition" }, status: :conflict
     end
   end
 

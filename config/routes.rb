@@ -6,8 +6,8 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resources :applications, param: :token do
-    resources :chats, only: [:index, :create, :show], param: :number do
-      resources :messages, only: [:index, :create, :show], param: :number
+    resources :chats, only: [ :index, :create, :show ], param: :number do
+      resources :messages, only: [ :index, :create, :show ], param: :number
     end
   end
 end
